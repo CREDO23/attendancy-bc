@@ -1,9 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as express from 'express';
 import * as http from 'http';
 import * as morgan from 'morgan';
 import * as cors from 'cors';
 import * as httpError from 'http-errors';
 import { dbConection } from './configs/database';
+import { authRouter } from './routes/auth';
+import { tokenGuard } from './middlewares/tokenGuard';
+import { userRouter } from './routes/user';
 
 export default class App {
   app: express.Application = express();
@@ -36,6 +41,9 @@ export default class App {
 
   public routes(): void {
     this.app.get('/', this.baseRoute);
+    this.app.use('/api/auth', authRouter);
+    this.app.use(tokenGuard);
+    this.app.use('/api/users', userRouter);
   }
 
   private errorsHandlers(): void {

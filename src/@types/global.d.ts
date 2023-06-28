@@ -20,7 +20,7 @@ declare global {
     vacation: TVacation;
   }
 
-  interface IAdmin {
+  interface IUser {
     id: mongoose.Types.ObjectId;
     name: string;
     email: string;
