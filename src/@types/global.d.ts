@@ -3,6 +3,7 @@ import * as jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 
 type TVacation = 'AV' | 'AP';
+type TAttendance = 'PRESENT' | 'ABSENT';
 
 declare global {
   interface IClientResponse {
@@ -31,6 +32,7 @@ declare global {
     id: mongoose.Types.ObjectId;
     studentId: mongoose.Types.ObjectId;
     date: mongoose.Date;
+    status: TAttendance;
   }
 
   interface IUserRequest extends express.Request {
