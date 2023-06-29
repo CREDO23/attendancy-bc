@@ -9,6 +9,8 @@ import { dbConection } from './configs/database';
 import { authRouter } from './routes/auth';
 import { tokenGuard } from './middlewares/tokenGuard';
 import { userRouter } from './routes/user';
+import { studentRouter } from './routes/students';
+import { attendanceRouter } from './routes/attendance';
 
 export default class App {
   app: express.Application = express();
@@ -44,6 +46,8 @@ export default class App {
     this.app.use('/api/auth', authRouter);
     this.app.use(tokenGuard);
     this.app.use('/api/users', userRouter);
+    this.app.use('/api/students', studentRouter);
+    this.app.use('/api/attendance', attendanceRouter);
   }
 
   private errorsHandlers(): void {

@@ -14,17 +14,42 @@ export class AttendanceController {
       const result = await JOIAttendanceValidation.create.validateAsync(
         req.body
       );
+      const date = new Date(Date.now());
 
-      const newAttendance = new Attendance({ ...result });
+      const hour = date.getHours();
 
-      const savedAttendance = await newAttendance.save();
+      const vacation =
+        8 < hour && hour < 12 ? 'AV' : hour > 12 && hour < 17 ? 'AP' : null;
 
-      res.json(<IClientResponse>{
-        message: 'Attendance saved successfully',
-        data: savedAttendance,
-        error: null,
-        success: true
-      });
+      const isExist = await Attendance.find({ $and: [{ date }, { vacation }] });
+
+      if (isExist) {
+        throw error.Conflict('The attendance has already been created');
+      } else {
+        const studentIds = await Student.find({ vacation }, { _id: 1 });
+
+        const newAttendance = new Attendance({
+          vacation: result.vacation,
+          date: date.toLocaleString(),
+          students: [
+            ...studentIds.map((studentId) => {
+              return {
+                id: studentId,
+                status: false
+              };
+            })
+          ]
+        });
+
+        const savedAttendance = await newAttendance.save();
+
+        res.json(<IClientResponse>{
+          message: 'Attendance created successfully',
+          data: savedAttendance,
+          error: null,
+          success: true
+        });
+      }
     } catch (error) {
       next(error);
     }
@@ -54,6 +79,7 @@ export class AttendanceController {
       next(error);
     }
   };
+
   static getAll = async (
     req: express.Request,
     res: express.Response,
