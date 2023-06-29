@@ -2,10 +2,8 @@ import express from 'express';
 import * as jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 
-type TVacation = 'AV' | 'AP';
-type TAttendance = 'PRESENT' | 'ABSENT';
-
 declare global {
+  type TVacation = 'AV' | 'AP';
   interface IClientResponse {
     message: string;
     data: unknown;
@@ -30,9 +28,9 @@ declare global {
 
   interface IAttandance {
     id: mongoose.Types.ObjectId;
-    studentId: mongoose.Types.ObjectId;
+    students: { id: mongoose.Types.ObjectId; status: boolean }[];
     date: mongoose.Date;
-    status: TAttendance;
+    vacation: TVacation;
   }
 
   interface IUserRequest extends express.Request {
