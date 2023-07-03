@@ -17,4 +17,4 @@ userSchema.pre('save', async function (next: express.NextFunction) {
   next();
 });
 
-export const User = mongoose.model('admins', userSchema);
+export const User = mongoose.model('users', userSchema);

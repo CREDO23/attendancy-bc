@@ -2,9 +2,9 @@ import * as mongoose from 'mongoose';
 
 const studentSchema = new mongoose.Schema<IStudent>({
   id: mongoose.Types.ObjectId,
-  firstName: String,
+  firstname: String,
   lastname: String,
-  middleName: String,
+  middlename: String,
   vacation: String
 });
 

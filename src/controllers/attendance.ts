@@ -14,19 +14,21 @@ export class AttendanceController {
       const result = await JOIAttendanceValidation.create.validateAsync(
         req.body
       );
-      const date = new Date(Date.now());
+      const date = new Date(Date.now()).toDateString();
 
-      const hour = date.getHours();
+      const isExist = await Attendance.find({
+        $and: [{ date }, { vacation: result.vacation }]
+      });
 
-      const vacation =
-        8 < hour && hour < 12 ? 'AV' : hour > 12 && hour < 17 ? 'AP' : null;
+      console.log(isExist);
 
-      const isExist = await Attendance.find({ $and: [{ date }, { vacation }] });
-
-      if (isExist) {
+      if (isExist[0]) {
         throw error.Conflict('The attendance has already been created');
       } else {
-        const studentIds = await Student.find({ vacation }, { _id: 1 });
+        const studentIds = await Student.find(
+          { vacation: result.vacation },
+          { _id: 1 }
+        );
 
         const newAttendance = new Attendance({
           vacation: result.vacation,
@@ -118,13 +120,8 @@ export class AttendanceController {
       } else {
         const date = new Date(Date.now());
 
-        const hour = date.getHours();
-
-        const vacation =
-          8 < hour && hour < 12 ? 'AV' : hour > 12 && hour < 17 ? 'AP' : null;
-
         const attendance = await Attendance.findOne({
-          $and: [{ date: date.toLocaleString().split(', ')[0] }, { vacation }]
+          $and: [{ date: date.toDateString() }, { vacation: student.vacation }]
         });
 
         attendance.students.map((student) => {

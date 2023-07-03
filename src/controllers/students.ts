@@ -14,8 +14,8 @@ export class StudentControllers {
         req.body
       );
 
-      const isExeist = Student.findOne({
-        $and: [{ middleName: result.middleName }, { lastname: result.lastname }]
+      const isExeist = await Student.findOne({
+        $and: [{ middlename: result.middlename }, { lastname: result.lastname }]
       });
 
       if (isExeist) {
@@ -23,7 +23,7 @@ export class StudentControllers {
       } else {
         const newStudent = new Student({ ...result });
 
-        const savedStudent = newStudent.save();
+        const savedStudent = await newStudent.save();
 
         res.json(<IClientResponse>{
           message: 'Student saved successfully',
@@ -93,7 +93,9 @@ export class StudentControllers {
     try {
       const { id } = req.params;
 
-      const result: IStudent = await JOIStudentValidation.create.validateAsync(
+      console.log('credo');
+
+      const result: IStudent = await JOIStudentValidation.update.validateAsync(
         req.body
       );
 

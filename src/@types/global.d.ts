@@ -13,9 +13,9 @@ declare global {
 
   interface IStudent {
     id: mongoose.Types.ObjectId;
-    firstName: string;
+    firstname: string;
     lastname: string;
-    middleName: string;
+    middlename: string;
     vacation: TVacation;
   }
 
