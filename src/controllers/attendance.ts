@@ -156,7 +156,7 @@ export class AttendanceController {
           message: `${student.lastname}`,
           data: updatedAttendance,
           error: null,
-          success: false
+          success: true
         });
       }
     } catch (error) {
