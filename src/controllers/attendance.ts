@@ -20,10 +20,10 @@ export class AttendanceController {
         $and: [{ date }, { vacation: result.vacation }]
       });
 
-      console.log(isExist);
-
       if (isExist[0]) {
-        throw error.Conflict('The attendance has already been created');
+        throw error.Conflict(
+          'Attendance for this vacation has already been created'
+        );
       } else {
         const studentIds = await Student.find(
           { vacation: result.vacation },
@@ -36,14 +36,19 @@ export class AttendanceController {
           students: [
             ...studentIds.map((studentId) => {
               return {
-                id: studentId,
-                status: false
+                student: studentId._id,
+                status: 'ABSENT'
               };
             })
           ]
         });
 
-        const savedAttendance = await newAttendance.save();
+        const savedAttendance = (await newAttendance.save()).populate({
+          path: 'students',
+          populate: {
+            path: 'student'
+          }
+        });
 
         res.json(<IClientResponse>{
           message: 'Attendance created successfully',
@@ -65,7 +70,12 @@ export class AttendanceController {
     try {
       const { id } = req.params;
 
-      const attendance = await Attendance.findById(id);
+      const attendance = await Attendance.findById(id).populate({
+        path: 'students',
+        populate: {
+          path: 'student'
+        }
+      });
 
       if (!attendance) {
         throw error.NotFound('Attendance not found');
@@ -88,7 +98,12 @@ export class AttendanceController {
     next: express.NextFunction
   ): Promise<void> => {
     try {
-      const attancies = await Attendance.find({});
+      const attancies = await Attendance.find({}).populate({
+        path: 'students',
+        populate: {
+          path: 'student'
+        }
+      });
 
       if (!attancies) {
         throw error.NotFound('Not attancies yet');
@@ -125,12 +140,17 @@ export class AttendanceController {
         });
 
         attendance.students.map((student) => {
-          if (new String(student.id) == studentId) {
-            student.status = true;
+          if (new String(student.student) == studentId) {
+            student.status = 'PRESENT';
           }
         });
 
-        const updatedAttendance = attendance.save();
+        const updatedAttendance = (await attendance.save()).populate({
+          path: 'students',
+          populate: {
+            path: 'student'
+          }
+        });
 
         res.json(<IClientResponse>{
           message: `${student.lastname}`,

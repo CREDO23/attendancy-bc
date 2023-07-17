@@ -3,7 +3,13 @@ import * as mongoose from 'mongoose';
 const attendanceSchema = new mongoose.Schema<IAttandance>({
   id: mongoose.Types.ObjectId,
   students: [
-    { id: { type: mongoose.Types.ObjectId, ref: 'students' }, status: Boolean }
+    {
+      student: { type: mongoose.Types.ObjectId, ref: 'students' },
+      status: {
+        type: String,
+        default: 'ABSENT'
+      }
+    }
   ],
   date: {
     type: Date,

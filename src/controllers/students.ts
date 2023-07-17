@@ -15,7 +15,18 @@ export class StudentControllers {
       );
 
       const isExeist = await Student.findOne({
-        $and: [{ middlename: result.middlename }, { lastname: result.lastname }]
+        $and: [
+          {
+            middlename: {
+              $regex: new RegExp(result.middlename, 'i')
+            }
+          },
+          {
+            lastname: {
+              $regex: new RegExp(result.lastname, 'i')
+            }
+          }
+        ]
       });
 
       if (isExeist) {

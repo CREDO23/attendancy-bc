@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 
 declare global {
   type TVacation = 'AV' | 'AP';
+  type TAttendStat = 'ABSENT' | 'PRESENT';
   interface IClientResponse {
     message: string;
     data: unknown;
@@ -28,7 +29,7 @@ declare global {
 
   interface IAttandance {
     id: mongoose.Types.ObjectId;
-    students: { id: mongoose.Types.ObjectId; status: boolean }[];
+    students: { student: mongoose.Types.ObjectId; status: TAttendStat }[];
     date: mongoose.Date;
     vacation: TVacation;
   }
