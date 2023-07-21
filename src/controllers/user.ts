@@ -71,6 +71,8 @@ export class UserControllers {
 
       const { id } = req.params;
 
+      console.log(id, result);
+
       const user = await User.findById(id);
 
       const requestId = req.user.id;
