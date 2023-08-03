@@ -74,8 +74,6 @@ export class AuthControllers {
             name: user.name
           });
 
-          console.log(accessToken);
-
           res.json(<IClientResponse>{
             message: `Logged as ${user.name}`,
             data: {
@@ -86,7 +84,7 @@ export class AuthControllers {
             success: true
           });
         } else {
-          throw error.NotFound('email --- or password incorrect');
+          throw error.NotFound('email or password incorrect');
         }
       } else {
         throw error.NotFound('email or . password incorrect');
