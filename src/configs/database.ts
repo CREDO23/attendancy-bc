@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import * as mongoose from 'mongoose';
 import * as dotenv from 'dotenv';
 

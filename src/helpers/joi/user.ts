@@ -17,4 +17,9 @@ export class JOIUserValidation {
     email: joi.string(),
     password: joi.string()
   });
+
+  static updatePassword = joi.object({
+    old: joi.string().required(),
+    new: joi.string().required()
+  });
 }

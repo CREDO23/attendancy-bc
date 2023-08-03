@@ -164,6 +164,46 @@ export class AttendanceController {
     }
   };
 
+  static updatePresence = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<void> => {
+    try {
+      const result = await JOIAttendanceValidation.updatePresence.validateAsync(
+        req.body
+      );
+
+      const { studentId } = req.params;
+
+      const attendance = await Attendance.findOne({
+        $and: [{ date: result.date }, { vacation: result.vacation }]
+      });
+
+      attendance.students.map((student) => {
+        if (String(student.student) == String(studentId)) {
+          student.status = result.status;
+        }
+      });
+
+      const updatedAttendance = (await attendance.save()).populate({
+        path: 'students',
+        populate: {
+          path: 'student'
+        }
+      });
+
+      res.json(<IClientResponse>{
+        message: 'Presence updated successfully',
+        data: updatedAttendance,
+        error: null,
+        success: true
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   static delete = async (
     req: express.Request,
     res: express.Response,

@@ -3,6 +3,7 @@ import * as error from 'http-errors';
 import * as express from 'express';
 import { User } from '../models/user';
 import { JOIUserValidation } from '../helpers/joi/user';
+import { BcryptHelpers } from '../helpers/bcrypt';
 
 export class UserControllers {
   static getUser = async (
@@ -70,9 +71,6 @@ export class UserControllers {
       const result = await JOIUserValidation.update.validateAsync(req.body);
 
       const { id } = req.params;
-
-      console.log(id, result);
-
       const user = await User.findById(id);
 
       const requestId = req.user.id;
@@ -97,6 +95,49 @@ export class UserControllers {
       }
     } catch (error) {
       if (error.isJoi) error.status = 422;
+      next(error);
+    }
+  };
+
+  static updatePassword = async (
+    req: IUserRequest,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<void> => {
+    try {
+      const { id } = req.params;
+
+      const user = await User.findById(id);
+      const requestId = req.user.id;
+
+      if (user._id == requestId) {
+        const result = await JOIUserValidation.updatePassword.validateAsync(
+          req.body
+        );
+
+        const isOldPasswordMatch = await BcryptHelpers.comparePassword(
+          result.old,
+          user.password
+        );
+
+        if (isOldPasswordMatch) {
+          user.password = result.new;
+
+          const updatedUser = await user.save();
+
+          res.json(<IClientResponse>{
+            message: 'Password changed successfully',
+            data: updatedUser,
+            error: null,
+            success: true
+          });
+        } else {
+          throw error.NotAcceptable('Incorect password');
+        }
+      } else {
+        throw error.Unauthorized('Unauthorized request');
+      }
+    } catch (error) {
       next(error);
     }
   };

@@ -104,8 +104,6 @@ export class StudentControllers {
     try {
       const { id } = req.params;
 
-      console.log('credo');
-
       const result: IStudent = await JOIStudentValidation.update.validateAsync(
         req.body
       );
